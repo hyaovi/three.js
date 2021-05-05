@@ -7,6 +7,7 @@ const assets = [
 
 	'./manifest.json',
 	'./images/icon.png',
+	'./images/mae/logo.png',
 
 	'../files/favicon.ico',
 

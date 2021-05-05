@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 	<head>
-		<title>three.js editor</title>
+		<title>Three | Mywebar Advanced Editor</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="apple-touch-icon" href="images/icon.png">
@@ -28,6 +28,8 @@
 		<link rel="stylesheet" href="js/libs/codemirror/addon/show-hint.css">
 		<link rel="stylesheet" href="js/libs/codemirror/addon/tern.css">
 
+		<link rel="stylesheet" href="css/mae.css">
+
 		<script src="js/libs/codemirror/addon/dialog.js"></script>
 		<script src="js/libs/codemirror/addon/show-hint.js"></script>
 		<script src="js/libs/codemirror/addon/tern.js"></script>
@@ -44,6 +46,7 @@
 		<script src="js/libs/tern-threejs/threejs.js"></script>
 		<script src="js/libs/signals.min.js"></script>
 
+
 		<script type="module">
 
 			import * as THREE from '../build/three.module.js';
@@ -57,6 +60,9 @@
 			import { Menubar } from './js/Menubar.js';
 			import { Resizer } from './js/Resizer.js';
 			import { VRButton } from '../examples/jsm/webxr/VRButton.js';
+
+			import { Modal } from './js/mae/modals/modal.js';
+			import { LeftSidebar } from './js/mae/LeftSidebar.js';
 
 			window.URL = window.URL || window.webkitURL;
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
@@ -90,11 +96,17 @@
 			var sidebar = new Sidebar( editor );
 			document.body.appendChild( sidebar.dom );
 
+			var leftSidebar = new LeftSidebar( editor );
+			document.body.appendChild( leftSidebar.dom );
+
 			var menubar = new Menubar( editor );
 			document.body.appendChild( menubar.dom );
 
-			var resizer = new Resizer( editor );
-			document.body.appendChild( resizer.dom );
+			var modal = new Modal( editor );
+			document.body.appendChild( modal.dom );
+
+			// var resizer = new Resizer( editor );
+			// document.body.appendChild( resizer.dom );
 
 			//
 

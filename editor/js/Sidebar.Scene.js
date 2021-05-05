@@ -166,7 +166,7 @@ function SidebarScene( editor ) {
 
 	var backgroundType = new UISelect().setOptions( {
 
-		'None': '',
+		'None': 'None',
 		'Color': 'Color',
 		'Texture': 'Texture',
 		'Equirectangular': 'Equirect'
@@ -215,7 +215,7 @@ function SidebarScene( editor ) {
 
 	var environmentType = new UISelect().setOptions( {
 
-		'None': '',
+		'None': 'None',
 		'Background': 'Background',
 		'ModelViewer': 'ModelViewer'
 
@@ -261,7 +261,7 @@ function SidebarScene( editor ) {
 	var fogTypeRow = new UIRow();
 	var fogType = new UISelect().setOptions( {
 
-		'None': '',
+		'None': 'None',
 		'Fog': 'Linear',
 		'FogExp2': 'Exponential'
 

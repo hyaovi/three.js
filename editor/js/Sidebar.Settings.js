@@ -21,7 +21,8 @@ function SidebarSettings( editor ) {
 	var options = {
 		en: 'English',
 		fr: 'Français',
-		zh: '中文'
+		zh: '中文',
+		ru: 'Русский',
 	};
 
 	var languageRow = new UIRow();
@@ -39,6 +40,8 @@ function SidebarSettings( editor ) {
 		var value = this.getValue();
 
 		editor.config.setKey( 'language', value );
+
+		location.reload();
 
 	} );
 

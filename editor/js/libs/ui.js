@@ -1110,6 +1110,8 @@ class UITab extends UIText {
 		super( text );
 
 		this.dom.className = 'Tab';
+		// MAE cursor pointer to tab
+		this.dom.style.cursor = 'pointer';
 
 		this.parent = parent;
 

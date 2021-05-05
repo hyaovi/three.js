@@ -1,4 +1,5 @@
-import * as THREE from '../../build/three.module.js';
+import * as WEBAR from '../../build/three.module.js';
+const { THREE } = WEBAR;
 
 import { TGALoader } from '../../examples/jsm/loaders/TGALoader.js';
 
@@ -7,8 +8,46 @@ import { SetSceneCommand } from './commands/SetSceneCommand.js';
 
 import { LoaderUtils } from './LoaderUtils.js';
 
-import { unzipSync, strFromU8 } from '../../examples/jsm/libs/fflate.module.js';
-import { loadImage } from './mae/Loader.image.js';
+import { JSZip } from '../../examples/jsm/libs/jszip.module.min.js';
+
+function lodImage( url, filename, editor ) {
+
+	var loader = new THREE.TextureLoader();
+
+	loader.load(
+		url,
+		function ( texture ) {
+
+			var mesh = new THREE.Object3D();
+
+			var texture_ratio = texture.image.width / texture.image.height;
+
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+			var material = new THREE.MeshBasicMaterial( {
+				map: texture,
+				side: THREE.DoubleSide
+			} );
+
+			var plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), material );
+
+			plane.scale.set( texture_ratio, 1, 1 );
+
+			mesh.add( plane );
+			mesh.name = filename;
+
+			editor.execute( new AddObjectCommand( editor, mesh ) );
+
+		},
+		undefined,
+		function () {
+
+			console.error( 'An error happened.' );
+
+		}
+	);
+
+}
 
 function Loader( editor ) {
 
@@ -300,6 +339,11 @@ function Loader( editor ) {
 			case 'js':
 			case 'json':
 
+			case '3geo':
+			case '3mat':
+			case '3obj':
+			case '3scn':
+
 				reader.addEventListener( 'load', function ( event ) {
 
 					var contents = event.target.result;
@@ -348,23 +392,6 @@ function Loader( editor ) {
 
 				break;
 
-			case 'ifc':
-
-				reader.addEventListener( 'load', async function ( event ) {
-
-					var { IFCLoader } = await import( '../../examples/jsm/loaders/IFCLoader.js' );
-
-					var loader = new IFCLoader();
-					var scene = await loader.parse( event.target.result );
-
-					scene.name = filename;
-
-					editor.execute( new AddObjectCommand( editor, scene ) );
-
-				}, false );
-				reader.readAsArrayBuffer( file );
-
-				break;
 
 			case 'kmz':
 
@@ -505,13 +532,13 @@ function Loader( editor ) {
 							depthWrite: false
 						} );
 
-						var shapes = SVGLoader.createShapes( path );
+						var shapes = path.toShapes( true );
 
 						for ( var j = 0; j < shapes.length; j ++ ) {
 
 							var shape = shapes[ j ];
 
-							var geometry = new THREE.ShapeGeometry( shape );
+							var geometry = new THREE.ShapeBufferGeometry( shape );
 							var mesh = new THREE.Mesh( geometry, material );
 
 							group.add( mesh );
@@ -624,9 +651,10 @@ function Loader( editor ) {
 					handleZIP( event.target.result );
 
 				}, false );
-				reader.readAsArrayBuffer( file );
+				reader.readAsBinaryString( file );
 
 				break;
+
 			case 'jpeg':
 			case 'jpg':
 			case 'png':
@@ -640,7 +668,7 @@ function Loader( editor ) {
 							type: file.type,
 						} );
 
-						loadImage( URL.createObjectURL( blob ), filename, editor );
+						lodImage( URL.createObjectURL( blob ), filename, editor );
 
 					}, false );
 					reader.readAsArrayBuffer( file );
@@ -648,6 +676,7 @@ function Loader( editor ) {
 				}
 
 				break;
+
 			default:
 
 				console.error( 'Unsupported file format (' + extension + ').' );
@@ -730,37 +759,35 @@ function Loader( editor ) {
 
 	async function handleZIP( contents ) {
 
-		var zip = unzipSync( new Uint8Array( contents ) );
+		var zip = new JSZip( contents );
 
 		// Poly
 
-		if ( zip[ 'model.obj' ] && zip[ 'materials.mtl' ] ) {
+		if ( zip.files[ 'model.obj' ] && zip.files[ 'materials.mtl' ] ) {
 
 			var { MTLLoader } = await import( '../../examples/jsm/loaders/MTLLoader.js' );
 			var { OBJLoader } = await import( '../../examples/jsm/loaders/OBJLoader.js' );
 
-			var materials = new MTLLoader().parse( strFromU8( zip[ 'materials.mtl' ] ) );
-			var object = new OBJLoader().setMaterials( materials ).parse( strFromU8( zip[ 'model.obj' ] ) );
+			var materials = new MTLLoader().parse( zip.file( 'materials.mtl' ).asText() );
+			var object = new OBJLoader().setMaterials( materials ).parse( zip.file( 'model.obj' ).asText() );
 			editor.execute( new AddObjectCommand( editor, object ) );
 
 		}
 
 		//
 
-		for ( var path in zip ) {
-
-			var file = zip[ path ];
+		zip.filter( async function ( path, file ) {
 
 			var manager = new THREE.LoadingManager();
 			manager.setURLModifier( function ( url ) {
 
-				var file = zip[ url ];
+				var file = zip.files[ url ];
 
 				if ( file ) {
 
 					console.log( 'Loading', url );
 
-					var blob = new Blob( [ file.buffer ], { type: 'application/octet-stream' } );
+					var blob = new Blob( [ file.asArrayBuffer() ], { type: 'application/octet-stream' } );
 					return URL.createObjectURL( blob );
 
 				}
@@ -769,7 +796,7 @@ function Loader( editor ) {
 
 			} );
 
-			var extension = path.split( '.' ).pop().toLowerCase();
+			var extension = file.name.split( '.' ).pop().toLowerCase();
 
 			switch ( extension ) {
 
@@ -778,7 +805,7 @@ function Loader( editor ) {
 					var { FBXLoader } = await import( '../../examples/jsm/loaders/FBXLoader.js' );
 
 					var loader = new FBXLoader( manager );
-					var object = loader.parse( file.buffer );
+					var object = loader.parse( file.asArrayBuffer() );
 
 					editor.execute( new AddObjectCommand( editor, object ) );
 
@@ -795,7 +822,7 @@ function Loader( editor ) {
 					var loader = new GLTFLoader();
 					loader.setDRACOLoader( dracoLoader );
 
-					loader.parse( file.buffer, '', function ( result ) {
+					loader.parse( file.asArrayBuffer(), '', function ( result ) {
 
 						var scene = result.scene;
 
@@ -816,7 +843,7 @@ function Loader( editor ) {
 
 					var loader = new GLTFLoader( manager );
 					loader.setDRACOLoader( dracoLoader );
-					loader.parse( strFromU8( file ), '', function ( result ) {
+					loader.parse( file.asText(), '', function ( result ) {
 
 						var scene = result.scene;
 
@@ -829,7 +856,7 @@ function Loader( editor ) {
 
 			}
 
-		}
+		} );
 
 	}
 

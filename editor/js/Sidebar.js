@@ -13,10 +13,11 @@ function Sidebar( editor ) {
 
 	var container = new UITabbedPanel();
 	container.setId( 'sidebar' );
+	container.addClass( 'p-2' );
 
 	var scene = new UISpan().add(
 		new SidebarScene( editor ),
-		new SidebarProperties( editor ),
+		// new SidebarProperties( editor ),
 		new SidebarAnimation( editor ),
 		new SidebarScript( editor )
 	);
@@ -24,8 +25,8 @@ function Sidebar( editor ) {
 	var settings = new SidebarSettings( editor );
 
 	container.addTab( 'scene', strings.getKey( 'sidebar/scene' ), scene );
-	container.addTab( 'project', strings.getKey( 'sidebar/project' ), project );
-	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
+	// container.addTab( 'project', strings.getKey( 'sidebar/project' ), project );
+	// container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
 	container.select( 'scene' );
 
 	return container;
