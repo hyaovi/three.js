@@ -1,5 +1,5 @@
 {
-  "name": "three",
+  "name": "three-mae",
   "version": "0.128.0",
   "description": "JavaScript 3D library",
   "main": "build/three.js",
@@ -126,5 +126,8 @@
       "build/three.module.js"
     ],
     "directories": {}
+  },
+  "dependencies": {
+    "three": "^0.128.0"
   }
 }
