@@ -74,7 +74,12 @@
     "test-e2e-cov": "node test/e2e/check-coverage.js",
     "test-treeshake": "rollup -c test/rollup.treeshake.config.js",
     "make-screenshot": "node test/e2e/puppeteer.js --make",
-    "prepublishOnly": "node utils/prepublish.js"
+    "prepublishOnly": "node utils/prepublish.js",
+
+    "build-mae-three":"cp -rv node_modules/three/build/ build_webar/",
+    "build-mae-example":"cp -rv node_modules/three/examples/ examples_webar/",
+    "build-mae":"npm run build-mae-three && npm run build-mae-example"
+
   },
   "keywords": [
     "three",
