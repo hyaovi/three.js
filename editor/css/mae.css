@@ -126,7 +126,7 @@ margin: calc( 2* var(--round-size)) ;
   right: 0;
   top: var(--menu-height);
   bottom: 0;
-  width: 300px;
+  width: 20%;
   background: #eee;
   overflow: auto;
   /* MAE */
@@ -201,8 +201,8 @@ margin: calc( 2* var(--round-size)) ;
 #viewport {
 	position: absolute;
 	top: var(--menu-height);
-	left: 0;
-	right: 300px;
+	left: 21%;
+	right: 20%;
 	bottom: 0;
 }
 
@@ -226,7 +226,7 @@ margin: calc( 2* var(--round-size)) ;
   left: 0;
   top: var(--menu-height);
   bottom: 0;
-  width: 22%;
+  width: 21%;
   box-sizing: border-box;
   background: #f4f4f4;
   overflow: auto;
@@ -285,7 +285,7 @@ margin: calc( 2* var(--round-size)) ;
   border: thin solid var(--light);
 }
 .TabbedPanel .Tabs .Tab {
-  flex-basis: 1;
+  flex: 1;
   text-align: center;
   cursor: pointer;
 }
