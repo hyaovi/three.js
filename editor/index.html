@@ -48,6 +48,8 @@
 
 
 		<script type="module">
+			import { checkAuth, getAuthentication } from './js/mae/auth.js';
+			checkAuth();
 
 			import * as THREE from '../build/three.module.js';
 
@@ -64,6 +66,8 @@
 			import { Modal } from './js/mae/modals/modal.js';
 			import { LeftSidebar } from './js/mae/LeftSidebar.js';
 
+
+
 			window.URL = window.URL || window.webkitURL;
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
@@ -76,6 +80,7 @@
 			//
 
 			var editor = new Editor();
+			console.log( editor );
 
 			window.editor = editor; // Expose editor to Console
 			window.THREE = THREE; // Expose THREE to APP Scripts and Console
